@@ -56,6 +56,7 @@ function logMiddleware(req, res, next) {
     next();
 }
 
+
 //authentication Middleware
 function authenticationMiddleware(req, res, next) {
     const token = req.header("Authorization");
@@ -66,10 +67,50 @@ function authenticationMiddleware(req, res, next) {
     }
 }
 
+//use a middleware function to find the current date and time
+//when a get request is made to the route /now
+//and send the time as a json object in the response 
+
+app.get("/now", timeMiddleware, (req, res) => {
+    res.json({time: req.time})
+})
 
 
 
-console.log(process.env.ENV_VARIABLE)
+function timeMiddleware(req, res, next) {
+req.time = new Date().toString();
+next();
+}
+
+
+//get route parameter input
+//path example /user/:userID/book/:bookID -> /user/willP/book/3412
+//req.params: {userID: 'willP', bookID: '3412'}
+//handle get request to the route /:word/echo
+//respond with a json object {echo: word}
+
+app.get("/:word/echo", (req, res) => res.json({echo: req.params.word}))
+
+//handle GET request to the route /user/:userID/book/:bookID
+//send both params in the response as a json object
+
+app.get("/user/:userID/book/:bookID", (req, res) => {
+    res.json({userID: req.params.userID, bookID: req.params.bookID})
+})
+
+//get query parameter input
+//actual url entered: /name?first=Will&last=Powell
+//? signifies when the query parameters start
+//& signifies an additional query parameter
+
+app.get("/name", (req, res) => {
+    res.json({
+        name: `${req.query.first} ${req.query.middle.charAt(0)} ${req.query.last}`
+    });
+
+})
+
+
 
 
 app.get("/json", (req, res) =>{
